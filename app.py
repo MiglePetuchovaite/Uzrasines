@@ -26,6 +26,15 @@ class User(db.Model, UserMixin):
   name = db.Column("Name", db.String(20), unique=True, nullable=False)
   email = db.Column("Email", db.String(120), unique=True, nullable=False)
   password = db.Column("Password", db.String(60), unique=True, nullable=False)
+  categories = db.relationship("Category", lazy=True)
+
+
+class Category(db.Model):
+    __tablename__ = "categories"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column("Name", db.String(20), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", lazy=True)  
 
 
 @login_manager.user_loader
@@ -72,9 +81,47 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/category', methods=['GET', 'POST'])
+@login_required
+def category():
+    categories = Category.query.filter_by(user_id=current_user.id).all()
+    forma = forms.CategoryForm()
+    if forma.validate_on_submit():
+        new_category = Category(name=forma.name.data, user_id=current_user.id)
+        db.session.add(new_category)
+        db.session.commit()
+        db.create_all()
+        categories = Category.query.filter_by(user_id=current_user.id).all()
+        return redirect(url_for('category', form=False, categories=categories))
+    return render_template('category.html', form=forma, categories=categories)
+
+
+@app.route("/edit_category/<int:id>", methods=['GET', 'POST'])
+@login_required
+def edit_category(id):
+    forma = forms.CategoryForm()
+    category = Category.query.get(id)
+    if forma.validate_on_submit() :
+        category.name = forma.name.data
+        db.session.commit()
+        return redirect(url_for('category'))
+    forma.name.data = category.name
+    return render_template("edit_category.html", form=forma, category=category)
+
+
+@app.route("/delete_category/<int:id>")
+@login_required
+def delete_category(id):
+    category = Category.query.get(id)
+    db.session.delete(category)
+    db.session.commit()
+    return redirect(url_for('category'))
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
+    
     app.run(host='127.0.0.1', port=8000, debug=True)

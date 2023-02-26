@@ -25,3 +25,8 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', [DataRequired()])
     remember = BooleanField('Remember me')
     submit = SubmitField('Log in')
+
+
+class CategoryForm(FlaskForm):
+    name = StringField('Pavadinimas', [DataRequired()])
+    submit = SubmitField('Done')
