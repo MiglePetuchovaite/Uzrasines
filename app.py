@@ -4,6 +4,8 @@ from flask import redirect, render_template, url_for, flash, request
 from flask_login import LoginManager, UserMixin, current_user, logout_user, login_user, login_required
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+import secrets
+from PIL import Image
 import forms
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -21,13 +23,13 @@ login_manager.login_view = 'register'
 login_manager.login_message_category = 'info'
 
 class User(db.Model, UserMixin):
-  __tablename__ = "user"
-  id = db.Column(db.Integer, primary_key=True)
-  name = db.Column("Name", db.String(20), unique=True, nullable=False)
-  email = db.Column("Email", db.String(120), unique=True, nullable=False)
-  password = db.Column("Password", db.String(60), unique=True, nullable=False)
-  categories = db.relationship("Category", lazy=True)
-
+     __tablename__ = "user"
+     id = db.Column(db.Integer, primary_key=True)
+     name = db.Column("Name", db.String(20), unique=True, nullable=False)
+     email = db.Column("Email", db.String(120), unique=True, nullable=False)
+     password = db.Column("Password", db.String(60), unique=True, nullable=False)
+     categories = db.relationship("Category", lazy=True)
+     notes = db.relationship("Note", lazy=True)
 
 class Category(db.Model):
     __tablename__ = "categories"
@@ -35,6 +37,15 @@ class Category(db.Model):
     name = db.Column("Name", db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     user = db.relationship("User", lazy=True)  
+
+class Note(db.Model):
+    __tablename__ = "notes"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column("Title", db.String(20), nullable=False)
+    text =db.Column("Text", db.Text, nullable=False)
+    photo = db.Column("Image", db.String(20), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", lazy=True) 
 
 
 @login_manager.user_loader
@@ -116,6 +127,40 @@ def delete_category(id):
     db.session.delete(category)
     db.session.commit()
     return redirect(url_for('category'))
+
+
+def save_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
+    picture_relative_path = '/static/images/' + picture_fn
+
+    output_size = (225, 225)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    i.save(picture_path)
+
+    return picture_relative_path
+
+
+@app.route('/note', methods=['GET', 'POST'])
+@login_required
+def note():
+    notes = Note.query.filter_by(user_id=current_user.id).all()
+    forma = forms.NoteForm()
+    if forma.validate_on_submit():
+        new_note = Note(title=forma.title.data, text=forma.text.data, user_id=current_user.id)  
+
+        if forma.photo.data:
+            photo_path = save_picture(forma.photo.data) 
+            new_note.photo = photo_path
+        
+        db.session.add(new_note)
+        db.session.commit()
+        notes = Note.query.filter_by(user_id=current_user.id).all()
+        return redirect(url_for("note", form=False, notes=notes))
+    return render_template('note.html', form=forma, notes=notes)
 
 
 @app.route('/')

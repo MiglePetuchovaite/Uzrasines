@@ -1,0 +1,30 @@
+{% extends "base.html" %} {% block content %}
+<h3>Sukurti užrašą</h3>
+<br />
+<form method="post" action="/note" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  <div class="form-group">
+    {{ form.title.label(class="form-control-label") }} {{
+    form.title(class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ form.text.label(class="form-control-label") }} {{
+    form.text(class="form-control") }}
+  </div>
+  <div class="form-group">
+    {{ form.photo.label() }} {{ form.photo(class="form-control-file") }}
+  </div>
+  <br />
+  {{ form.submit }}
+</form>
+<br />
+<h3>Užrašai:</h3>
+<br />
+{% for note in notes %}
+<p>{{note.title}}</p>
+<p>{{note.text}}</p>
+{% if note.photo %}
+<img class="img-thumbnail" src="{{ note.photo }}" />
+{% endif %}
+<hr />
+{% endfor %} {% endblock %}

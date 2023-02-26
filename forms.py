@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, BooleanField, StringField, PasswordField
-from wtforms.validators import DataRequired, ValidationError, EqualTo
+from wtforms import SubmitField, BooleanField, StringField, PasswordField, TextAreaField
+from flask_wtf.file import FileField, FileAllowed
+from wtforms.validators import DataRequired, ValidationError, EqualTo, Length
 import app
 
 class RegisterForm(FlaskForm):
@@ -29,4 +30,10 @@ class LoginForm(FlaskForm):
 
 class CategoryForm(FlaskForm):
     name = StringField('Pavadinimas', [DataRequired()])
-    submit = SubmitField('Done')
+    submit = SubmitField('Pridėti')
+
+class NoteForm(FlaskForm):
+    title = StringField('Pavadinimas', [DataRequired(), Length(max=25)])
+    text = TextAreaField('Užrašas', [DataRequired()])
+    photo = FileField('Nuotrauka', validators=[FileAllowed(['jpg', 'png'])])
+    submit = SubmitField('Pridėti')
