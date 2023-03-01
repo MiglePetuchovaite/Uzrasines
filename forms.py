@@ -2,8 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, BooleanField, StringField, PasswordField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, ValidationError, EqualTo, Length
+from wtforms_sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 import app
-
 class RegisterForm(FlaskForm):
     name = StringField('Name', [DataRequired()])
     email = StringField('Email', [DataRequired()])
@@ -36,4 +36,5 @@ class NoteForm(FlaskForm):
     title = StringField('Pavadinimas', [DataRequired(), Length(max=25)])
     text = TextAreaField('Užrašas', [DataRequired()])
     photo = FileField('Nuotrauka', validators=[FileAllowed(['jpg', 'png'])])
+    categories = QuerySelectMultipleField("Categories", get_label="name", get_pk=lambda obj: str(obj.id))
     submit = SubmitField('Pridėti')

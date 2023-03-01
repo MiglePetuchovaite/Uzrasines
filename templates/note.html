@@ -14,6 +14,11 @@
   <div class="form-group">
     {{ form.photo.label() }} {{ form.photo(class="form-control-file") }}
   </div>
+
+  <div class="form-group">
+    {{ form.categories.label(class="form-label") }} {{
+    form.categories(class="form-select") }}
+  </div>
   <br />
   {{ form.submit }}
 </form>
@@ -25,6 +30,8 @@
 <p>{{note.text}}</p>
 {% if note.photo %}
 <img class="img-thumbnail" src="{{ note.photo }}" />
-{% endif %}
+{% endif %} {% for category in note.categories %}
+<span class="badge bg-secondary">{{ category.name }}</span>
+{% endfor %}
 <hr />
 {% endfor %} {% endblock %}

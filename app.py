@@ -11,16 +11,25 @@ import forms
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+
+bcrypt = Bcrypt(app)
 app.app_context().push()
 app.config['SECRET_KEY'] = '4654f5dfadsrfasdr54e6rae'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'notes.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'register'
 login_manager.login_message_category = 'info'
+
+notes_categories = db.Table('notes_categories', db.metadata,
+    db.Column('id', db.Integer, primary_key=True),
+    db.Column('note_id', db.Integer, db.ForeignKey('notes.id')),
+    db.Column('category_id', db.Integer, db.ForeignKey('categories.id'))
+)
+
 
 class User(db.Model, UserMixin):
      __tablename__ = "user"
@@ -36,7 +45,8 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column("Name", db.String(20), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    user = db.relationship("User", lazy=True)  
+    user = db.relationship("User", lazy=True)
+    notes = db.relationship("Note", secondary=notes_categories, back_populates="categories")
 
 class Note(db.Model):
     __tablename__ = "notes"
@@ -45,8 +55,8 @@ class Note(db.Model):
     text =db.Column("Text", db.Text, nullable=False)
     photo = db.Column("Image", db.String(20), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    user = db.relationship("User", lazy=True) 
-
+    user = db.relationship("User", lazy=True)
+    categories = db.relationship('Category', secondary=notes_categories, back_populates="notes")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -149,13 +159,14 @@ def save_picture(form_picture):
 def note():
     notes = Note.query.filter_by(user_id=current_user.id).all()
     forma = forms.NoteForm()
+    forma.categories.query = Category.query.all()
     if forma.validate_on_submit():
         new_note = Note(title=forma.title.data, text=forma.text.data, user_id=current_user.id)  
-
         if forma.photo.data:
             photo_path = save_picture(forma.photo.data) 
             new_note.photo = photo_path
-        
+        for category in forma.categories.data:
+            new_note.categories.append(Category.query.get(category.id))
         db.session.add(new_note)
         db.session.commit()
         notes = Note.query.filter_by(user_id=current_user.id).all()
