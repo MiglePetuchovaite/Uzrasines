@@ -28,10 +28,16 @@
 {% for note in notes %}
 <p>{{note.title}}</p>
 <p>{{note.text}}</p>
+
 {% if note.photo %}
 <img class="img-thumbnail" src="{{ note.photo }}" />
 {% endif %} {% for category in note.categories %}
 <span class="badge bg-secondary">{{ category.name }}</span>
 {% endfor %}
+<br>
+<a  href="{{ url_for('edit_note', id=note['id']) }}">Edit</a>
+<a  href="{{ url_for('delete_note', id=note['id']) }}">Delete</a>
 <hr />
-{% endfor %} {% endblock %}
+{% endfor %}
+
+{% endblock %}

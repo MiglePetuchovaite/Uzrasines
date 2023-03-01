@@ -19,7 +19,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir, 'note
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
 login_manager = LoginManager(app)
 login_manager.login_view = 'register'
 login_manager.login_message_category = 'info'
@@ -60,7 +59,7 @@ class Note(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    db.create_all()
+    # db.create_all()
     return User.query.get(int(user_id))
 
 
@@ -172,6 +171,29 @@ def note():
         notes = Note.query.filter_by(user_id=current_user.id).all()
         return redirect(url_for("note", form=False, notes=notes))
     return render_template('note.html', form=forma, notes=notes)
+
+
+@app.route("/edit_note/<int:id>", methods=['GET', 'POST'])
+@login_required
+def edit_note(id):
+    note = Note.query.get(id)
+    forma = forms.NoteForm(obj=note)
+    forma.categories.query = Category.query.all()
+    if forma.validate_on_submit():
+        note.title = forma.title.data
+        note.text = forma.text.data
+        note.categories = forma.categories.data
+        db.session.commit()
+        return redirect(url_for('note'))
+    return render_template("edit_note.html", form=forma, note=note)
+
+@app.route("/delete/<int:id>")
+@login_required
+def delete_note(id):
+    note = Note.query.get(id)
+    db.session.delete(note)
+    db.session.commit()
+    return redirect(url_for('note'))
 
 
 @app.route('/')
