@@ -24,6 +24,12 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
+                <li>
+                    <form action = "{{ url_for('search') }}" method="POST" class="form-inline my-2 my-md-0">
+                    {{ form.hidden_tag() }}
+                    <input name="searched" class="form-control" type="text" placeholder="Paieška">
+                    </form>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/note">Užrašai</a>
                 </li>
@@ -33,6 +39,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">Log out</a>
                 </li>
+
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="/register">Register</a>

@@ -4,6 +4,7 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, ValidationError, EqualTo, Length
 from wtforms_sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 import app
+
 class RegisterForm(FlaskForm):
     name = StringField('Name', [DataRequired()])
     email = StringField('Email', [DataRequired()])
@@ -28,9 +29,15 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log in')
 
 
+class SearchForm(FlaskForm):
+    searched = StringField('Paieška', [DataRequired()])
+    submit = SubmitField('Ieškoti')
+
+
 class CategoryForm(FlaskForm):
     name = StringField('Pavadinimas', [DataRequired()])
     submit = SubmitField('Pridėti')
+
 
 class NoteForm(FlaskForm):
     title = StringField('Pavadinimas', [DataRequired(), Length(max=25)])

@@ -8,6 +8,7 @@ import secrets
 from PIL import Image
 import forms
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -57,6 +58,7 @@ class Note(db.Model):
     user = db.relationship("User", lazy=True)
     categories = db.relationship('Category', secondary=notes_categories, back_populates="notes")
 
+
 @login_manager.user_loader
 def load_user(user_id):
     # db.create_all()
@@ -99,6 +101,22 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.context_processor
+def base():
+    form = forms.SearchForm()
+    return dict(form = form)
+
+
+@app.route('/search', methods=["POST"])
+@login_required
+def search():
+    forma = forms.SearchForm()
+    notes = Note.query
+    if forma.validate_on_submit():
+        note.searched = forma.searched.data
+        notes = notes.filter(Note.title.like('%' + note.searched + '%'))
+        return render_template("search.html", form=forma, searched=note.searched, notes=notes)
 
 
 @app.route('/category', methods=['GET', 'POST'])
@@ -194,6 +212,7 @@ def delete_note(id):
     db.session.delete(note)
     db.session.commit()
     return redirect(url_for('note'))
+
 
 
 @app.route('/')
