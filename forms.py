@@ -43,5 +43,5 @@ class NoteForm(FlaskForm):
     title = StringField('Pavadinimas', [DataRequired(), Length(max=25)])
     text = TextAreaField('Užrašas', [DataRequired()])
     photo = FileField('Nuotrauka', validators=[FileAllowed(['jpg', 'png'])])
-    categories = QuerySelectMultipleField("Categories", get_label="name", get_pk=lambda obj: str(obj.id))
+    categories = QuerySelectMultipleField("Kategorijos", get_label="name", get_pk=lambda obj: str(obj.id))
     submit = SubmitField('Pridėti')

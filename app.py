@@ -69,7 +69,7 @@ def load_user(user_id):
 def register():
     db.create_all()
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     form = forms.RegisterForm()
     if form.validate_on_submit():
         coded_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -77,21 +77,21 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Registration Successful! Log in!', 'success')
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('note'))
     form = forms.LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('index'))
+            return redirect(next_page) if next_page else redirect(url_for('note'))
         else:
             flash('Failed to sign in. Check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -100,7 +100,7 @@ def login():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.context_processor
 def base():
@@ -176,7 +176,8 @@ def save_picture(form_picture):
 def note():
     notes = Note.query.filter_by(user_id=current_user.id).all()
     forma = forms.NoteForm()
-    forma.categories.query = Category.query.all()
+    categories = Category.query.filter_by(user_id=current_user.id).all()
+    forma.categories.query = categories
     if forma.validate_on_submit():
         new_note = Note(title=forma.title.data, text=forma.text.data, user_id=current_user.id)  
         if forma.photo.data:
@@ -187,8 +188,8 @@ def note():
         db.session.add(new_note)
         db.session.commit()
         notes = Note.query.filter_by(user_id=current_user.id).all()
-        return redirect(url_for("note", form=False, notes=notes))
-    return render_template('note.html', form=forma, notes=notes)
+        return redirect(url_for("note", form=False, notes=notes, categories=categories))
+    return render_template('note.html', form=forma, notes=notes, categories=categories)
 
 
 @app.route("/edit_note/<int:id>", methods=['GET', 'POST'])
@@ -205,6 +206,7 @@ def edit_note(id):
         return redirect(url_for('note'))
     return render_template("edit_note.html", form=forma, note=note)
 
+
 @app.route("/delete/<int:id>")
 @login_required
 def delete_note(id):
@@ -214,10 +216,21 @@ def delete_note(id):
     return redirect(url_for('note'))
 
 
+@app.route("/filter")
+@login_required
+def filter_notes():
+    category_id = request.args.get('category')
+    category = Category.query.get(category_id)
+    if category:
+        notes = category.notes
+    else:
+        notes = Note.query.all()
+    return render_template("filter.html", notes=notes, category=category)
+
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+     return render_template('index.html')
 
 if __name__ == '__main__':
     

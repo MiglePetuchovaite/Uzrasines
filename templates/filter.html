@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block content %}
+    <h1>{{ category.name }}:</h1>
+
+      {% for note in notes %}
+      <div class="shadow p-3 mb-5 bg-body rounded">
+        <h3>{{ note.title }}</h3>
+                {% if note.photo %}
+        <img class="img-thumbnail" src="{{ note.photo }}" />
+        {% endif %}
+        
+        <p>{{ note.text }}</p>
+</div>
+    <br>
+    {% endfor %}
+    <br>
+    <p><a href="{{ url_for('note') }}">Grįžti atgal</a></p>
+{% endblock %}

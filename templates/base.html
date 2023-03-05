@@ -14,32 +14,34 @@
 </head>
 <body>
     <!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary static-top">
-    <div class="container">
-        <a class="navbar-brand" href="/">Užrašinės</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/note">Užrašinės</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                 aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
                 <li>
-                    <form action = "{{ url_for('search') }}" method="POST" class="form-inline my-2 my-md-0">
+                    <form action = "{{ url_for('search') }}" method="POST" class="d-flex ">
                     {{ form.hidden_tag() }}
                     <input name="searched" class="form-control" type="text" placeholder="Paieška">
+                    <button class="btn btn-outline-white" type="submit">Ieškoti</button>
                     </form>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/note">Užrašai</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/category">Kategorijos</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="/note">Užrašai</a></li>
+                <li class="nav-item"><a class="nav-link" href="/category">Kategorijos</a></li>
+                {% for category in categories %}
+                    <li class="nav-item">
+                      <a class="nav-link" href="/filter?category={{ category.id }}">{{ category.name }}</a>
+                    </li>
+                    {% endfor %}
                 <li class="nav-item">
                     <a class="nav-link" href="/logout">Log out</a>
                 </li>
-
                 {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="/register">Register</a>
@@ -53,12 +55,13 @@
     </div>
 </nav>
     <div class="container">
+
         <br />
         {% with messages = get_flashed_messages(with_categories=true) %} {% if
         messages %} {% for category, message in messages %}
         <div class="alert alert-{{ category }}">{{ message }}</div>
         {% endfor %} {% endif %} {% endwith %} {% block content %} {% endblock %}
-      </div>
+    </div>
 
           <!-- Bootstrap core JavaScript -->
     <script
