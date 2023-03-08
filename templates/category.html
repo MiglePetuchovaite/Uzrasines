@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block content %}
+<h3>Sukurti kategoriją</h3>
+<br />
+<form class="row gx-3 gy-2 align-items-center" method="post" action="#" >
+    {{ form.hidden_tag() }}
+    <div class="form-group col-sm-5">
+      {{ form.name.label(class="form-control-label") }} {{
+      form.name(class="form-control ") }}
+    </div>
+    <br />
+    {{ form.submit }}
+  </form>
+<br>
+<h3>Sukurtos kategorijos:</h3>
+<br>
+  {% for category in categories %}
+  <p>{{category.name}}</p>
+  <a  href="{{ url_for('edit_category', id=category['id']) }}">Redaguoti</a> ||
+  <a  href="{{ url_for('delete_category', id=category['id']) }}">Ištrinti</a>
+  <hr />
+  {% endfor %}
+{% endblock %}

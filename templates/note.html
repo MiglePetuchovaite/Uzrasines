@@ -1,0 +1,44 @@
+{% extends "base.html" %} {% block content %}
+
+<br />
+<h3>Sukurti naują užrašą</h3>
+<br />
+<form class="row gx-3 gy-2 align-items-center" method="post" action="/note" enctype="multipart/form-data">
+  {{ form.hidden_tag() }}
+  <div class="form-group col-sm-3">
+    {{ form.title.label(class="form-control-label") }} {{
+    form.title(class="form-control") }}
+  </div>
+  <div class="form-group col-sm-5">
+    {{ form.text.label(class="form-control-label") }} {{
+    form.text(class="form-control") }}
+  </div>
+  <div class="form-group col-auto">
+    {{ form.categories.label(class="form-label") }} {{
+    form.categories(class="form-select") }}
+  </div>
+  <div class="form-group col-auto">
+    {{ form.photo.label() }} {{ form.photo(class="form-control-file") }}
+  </div>
+  <div>  
+{{ form.submit (class="btn btn-outline-dark ")}}
+  </div>
+</form>
+<hr />
+
+<h3>Užrašai:</h3>
+<br />
+{% for note in notes %}
+<div class="shadow p-3 mb-5 bg-body rounded" style="max-width: 25rem;">
+<p> <strong>{{note.title}}</strong> {% for category in note.categories %}
+<span class="badge bg-info">{{ category.name }}</span>
+{% endfor %}</p>
+<p>{{note.text}}</p>
+{% if note.photo %}
+<img class="img-thumbnail" src="{{ note.photo }}" />
+{% endif %} 
+<br />
+<a href="{{ url_for('edit_note', id=note['id']) }}">Redaguoti</a> ||
+<a href="{{ url_for('delete_note', id=note['id']) }}">Ištrinti</a>
+</div>
+{% endfor %} {% endblock %}

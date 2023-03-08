@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Rodomi rezultatai užklausai: <em>{{ searched }} </em> </h4>
+<br>
+{% for note in notes %}
+<div class="shadow p-3 mb-5 bg-body rounded">
+    <strong> {{ note.title }}</strong>
+    <br>
+    {{ note.text }} <br>
+    {% if note.photo %}
+        <img class="img-thumbnail" src="{{ note.photo }}" />
+    {% endif %}
+</div>
+{% endfor %}
+<p><a href="{{ url_for('note') }}">Grįžti atgal</a></p>
+{% endblock %}

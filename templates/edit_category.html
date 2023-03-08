@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block content %}
+
+<form class="col-sm-7" method="POST" action="#">
+  {{ form.hidden_tag() }}
+  <div >
+    <div>
+      {{ form.name.label(class="form-control-label") }} {{
+      form.name(class="form-control") }}
+    </div>
+  <br />
+  {{ form.submit }}
+</form>
+<p><a href="{{ url_for('note') }}">Grįžti atgal</a></p>
+{% endblock %}
