@@ -3,7 +3,7 @@
   <form method="POST" action="">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Login</legend>
+      <legend class="border-bottom mb-4">Prisijungimas</legend>
       <div class="form-group">
         {{ form.email.label(class="form-control-label") }} {% if
         form.email.errors %} {{ form.email(class="form-control form-control-lg
@@ -40,8 +40,8 @@
 </div>
 <div class="border-top pt-3">
   <small class="text-muted">
-    Don't have an account?
-    <a class="ml-2" href="{{ url_for('register') }}">Register</a>
+    Neturi paskyros?
+    <a class="ml-2" href="{{ url_for('register') }}">Registruotis</a>
   </small>
 </div>
 

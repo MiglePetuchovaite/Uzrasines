@@ -76,7 +76,7 @@ def register():
         user = User(name=form.name.data, email=form.email.data, password=coded_password)
         db.session.add(user)
         db.session.commit()
-        flash('Registration Successful! Log in!', 'success')
+        flash('Registracija sekminga! Prisijunk!', 'success')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -197,7 +197,7 @@ def note():
 def edit_note(id):
     note = Note.query.get(id)
     forma = forms.NoteForm(obj=note)
-    forma.categories.query = Category.query.all()
+    forma.categories.query = Category.query.filter_by(user_id=current_user.id).all()
     if forma.validate_on_submit():
         note.title = forma.title.data
         note.text = forma.text.data

@@ -3,7 +3,7 @@
   <form method="POST" action="">
     {{ form.hidden_tag() }}
     <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Register</legend>
+      <legend class="border-bottom mb-4">Registracija</legend>
       <div class="form-group">
         {{ form.name.label(class="form-control-label") }} {% if form.name.errors
         %} {{ form.name(class="form-control form-control-lg is-invalid") }}
@@ -59,7 +59,7 @@
 </div>
 <div class="border-top pt-3">
   <small class="text-muted">
-    Already Have An Account? <a class="ml-2" href="{{ url_for('login') }}">Log In</a>
+    Jei turi susikuręs paskyrą<a class="ml-2" href="{{ url_for('login') }}">prisijunk</a>
   </small>
 </div>
 {% endblock content %}

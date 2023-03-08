@@ -1,4 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-
+<h3 class="text-center">Labas!</h3>
+<br>
+<p class="text-center">
+    Susikurk paskyrą<a class="ml-2" href="{{ url_for('register') }}">registruotis</a>
+</p>
+  <br>
+<p class="text-center">
+    O jei jau turi susikuręs paskyrą<a class="ml-2" href="{{ url_for('login') }}">prisijunk</a>
+</p>
 {% endblock %}

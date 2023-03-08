@@ -6,11 +6,11 @@ from wtforms_sqlalchemy.fields import QuerySelectMultipleField, QuerySelectField
 import app
 
 class RegisterForm(FlaskForm):
-    name = StringField('Name', [DataRequired()])
-    email = StringField('Email', [DataRequired()])
-    password = PasswordField('Password', [DataRequired()])
-    repeat_password = PasswordField("Repeat Password", [EqualTo('password', "Password have to macth.")])
-    submit = SubmitField('Register')
+    name = StringField('Vartotojo vardas', [DataRequired()])
+    email = StringField('El. paštas', [DataRequired()])
+    password = PasswordField('Slaptažodis', [DataRequired()])
+    repeat_password = PasswordField("Pakartoti Slaptažodį", [EqualTo('password', "Password have to macth.")])
+    submit = SubmitField('Registruotis')
 
     def check_name(self, name):
         user = app.User.query.filter_by(name=name.data).first()
@@ -23,10 +23,10 @@ class RegisterForm(FlaskForm):
             raise ValidationError('This email is used. Please enter other email.')
             
 class LoginForm(FlaskForm):
-    email = StringField('Email', [DataRequired()])
-    password = PasswordField('Password', [DataRequired()])
-    remember = BooleanField('Remember me')
-    submit = SubmitField('Log in')
+    email = StringField('El. paštas', [DataRequired()])
+    password = PasswordField('Slaptažodis', [DataRequired()])
+    remember = BooleanField('Atsiminti mane')
+    submit = SubmitField('Prisijungti')
 
 
 class SearchForm(FlaskForm):
